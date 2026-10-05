@@ -1,0 +1,6 @@
+{
+  "name": "Flight Delay Predictor Studio",
+  "description": "Interactive machine learning pipeline and predictor for airline flight delays with real-time Firestore database persistence, live model training, dataset analytics, and Python Streamlit export.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

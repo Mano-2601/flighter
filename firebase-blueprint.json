@@ -1,0 +1,77 @@
+{
+  "entities": {
+    "SavedPrediction": {
+      "title": "SavedPrediction",
+      "description": "A flight delay prediction record with inputs and computed outcome probabilities.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "gender": { "type": "string", "enum": ["Male", "Female"] },
+        "age": { "type": "number" },
+        "nationality": { "type": "string", "maxLength": 100 },
+        "airportCountryCode": { "type": "string", "maxLength": 10 },
+        "airportContinent": { "type": "string", "maxLength": 10 },
+        "departureDate": { "type": "string", "maxLength": 20 },
+        "predictedStatus": { "type": "string", "enum": ["On Time", "Delayed", "Cancelled"] },
+        "probabilities": { "type": "object" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["userId", "gender", "age", "nationality", "airportCountryCode", "airportContinent", "departureDate", "predictedStatus"]
+    },
+    "FlightRecord": {
+      "title": "FlightRecord",
+      "description": "An airline dataset record stored in the database.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "passengerId": { "type": "string", "maxLength": 50 },
+        "firstName": { "type": "string", "maxLength": 60 },
+        "lastName": { "type": "string", "maxLength": 60 },
+        "gender": { "type": "string", "enum": ["Male", "Female"] },
+        "age": { "type": "number" },
+        "nationality": { "type": "string", "maxLength": 100 },
+        "airportName": { "type": "string", "maxLength": 120 },
+        "airportCountryCode": { "type": "string", "maxLength": 10 },
+        "airportContinent": { "type": "string", "maxLength": 10 },
+        "departureDate": { "type": "string", "maxLength": 20 },
+        "flightStatus": { "type": "string", "enum": ["On Time", "Delayed", "Cancelled"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["passengerId", "firstName", "lastName", "gender", "age", "nationality", "airportCountryCode", "airportContinent", "departureDate", "flightStatus"]
+    },
+    "ModelCheckpoint": {
+      "title": "ModelCheckpoint",
+      "description": "A saved trained model checkpoint with metrics.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "testSplit": { "type": "number" },
+        "iterations": { "type": "number" },
+        "regularizationC": { "type": "number" },
+        "accuracy": { "type": "number" },
+        "f1Score": { "type": "number" },
+        "precision": { "type": "number" },
+        "recall": { "type": "number" },
+        "testSetSize": { "type": "number" },
+        "trainSetSize": { "type": "number" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["testSplit", "iterations", "regularizationC", "accuracy", "f1Score"]
+    }
+  },
+  "firestore": {
+    "/predictions/{predictionId}": {
+      "schema": "SavedPrediction",
+      "description": "Collection of saved flight status predictions."
+    },
+    "/dataset/{recordId}": {
+      "schema": "FlightRecord",
+      "description": "Collection of synced airline dataset flight records."
+    },
+    "/model_checkpoints/{checkpointId}": {
+      "schema": "ModelCheckpoint",
+      "description": "Collection of trained model metrics and benchmark checkpoints."
+    }
+  }
+}

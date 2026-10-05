@@ -1,0 +1,56 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net - Default Deny Catch-All
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Connection testing
+    match /test/{docId} {
+      allow read: if true;
+    }
+
+    // Flight delay predictions collection
+    match /predictions/{predictionId} {
+      allow read: if true;
+      allow create: if isValidId(predictionId) &&
+        request.resource.data.gender in ['Male', 'Female'] &&
+        request.resource.data.predictedStatus in ['On Time', 'Delayed', 'Cancelled'] &&
+        request.resource.data.age is number &&
+        request.resource.data.age >= 1 && request.resource.data.age <= 120 &&
+        request.resource.data.nationality is string && request.resource.data.nationality.size() <= 100 &&
+        request.resource.data.airportCountryCode is string && request.resource.data.airportCountryCode.size() <= 10 &&
+        request.resource.data.airportContinent is string && request.resource.data.airportContinent.size() <= 10;
+      allow update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    // Airline dataset collection
+    match /dataset/{recordId} {
+      allow read: if true;
+      allow create, update: if isSignedIn() && isValidId(recordId) &&
+        request.resource.data.flightStatus in ['On Time', 'Delayed', 'Cancelled'] &&
+        request.resource.data.passengerId is string && request.resource.data.passengerId.size() <= 60;
+      allow delete: if isSignedIn();
+    }
+
+    // Model checkpoints collection
+    match /model_checkpoints/{checkpointId} {
+      allow read: if true;
+      allow create: if isSignedIn() && isValidId(checkpointId) &&
+        request.resource.data.accuracy is number &&
+        request.resource.data.f1Score is number;
+      allow update, delete: if isSignedIn();
+    }
+  }
+}
